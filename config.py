@@ -14,4 +14,6 @@ line_channel_secret = environ.get("LINE_CHANNEL_SECRET", '')
 
 cred_path = environ.get("CRED_PATH", '')
 firebase_database_url = environ.get("FIREBASE_DATABASE_URL", '')
-env = environ.get("ENV", 'Prd')
+
+cotoha_client_id = environ.get("COTOHA_CLIENT_ID", '')
+cotoha_client_secret = environ.get("COTOHA_CLIENT_SECRET", '')
