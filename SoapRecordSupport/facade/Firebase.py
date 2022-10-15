@@ -2,6 +2,8 @@
 
 import firebase_admin
 from firebase_admin import credentials, db
+from SoapRecordSupport.models.PostEvaluate.PostEvaluateResponseModel import \
+    Guideline
 
 
 class Firebase():
@@ -33,10 +35,29 @@ class Firebase():
     def get_all(self):
         return db.reference(f"{self.target_path_prefix}").get()
     
-    
     def get_group_users(self, group_id: str):
         return db.reference(f"{self.group_path_prefix}/{group_id}").get()
+    
+    def get_guideline(self, keywords: list[str])->list[Guideline]:
+        guidelines = db.reference(f"guidelines").get()
         
+        target_guidelines: list[Guideline] = []
+        print(guidelines)
+
+        for guide in guidelines:
+            try:
+                print(keywords)
+                if guide.get('category') in keywords:
+                    target_guidelines.append(
+                        Guideline(
+                            category=guide.get('category'),
+                            url=guide.get('url'),
+                        )
+                    )
+            except:
+                pass # エラーが発生したらとりあえずスキップ
+                    
+        return target_guidelines
     
 # if __name__ == "__main__":
     # import logging
