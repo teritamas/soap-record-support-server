@@ -1,0 +1,12 @@
+version: "3.3"
+services:
+  soap-record-support-server:
+    build: .
+    image: soap-record-support-server
+    container_name: soap-record-support-server
+    restart: unless-stopped
+    command: python main.py
+    ports:
+      - "8010:8010"
+    env_file:
+      - ./.env
