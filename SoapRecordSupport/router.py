@@ -28,6 +28,7 @@ handler = WebhookHandler(config.line_channel_secret)
 
 # 現状は看護記録を打ち分けないのでsampleに固定
 RECORD_ID = "sample"
+GROUP_ID = "1"
 
 @router.get(f"{prefix}/")
 def health_check():
@@ -52,7 +53,17 @@ def send_feedback(
     Returns:
         _type_: _description_
     """
-    return service.send_line(request)
+    
+    to_users: list[str] = service.get_send_users(GROUP_ID)
+    converted_text: str = service.convert_line_message(request)
+    
+    line_bot_api.multicast(
+        to=to_users,
+        messages= TextSendMessage(text=converted_text),
+    )
+    
+    return PostFeedbackResponseModel(status="ok")
+
 
 @router.get(f"{prefix}/feedback", response_model=GetFeedbackResponseModel)
 def get_feedback():

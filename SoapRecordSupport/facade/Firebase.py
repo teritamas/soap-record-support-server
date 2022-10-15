@@ -16,6 +16,7 @@ class Firebase():
             'databaseURL': databaseURL
         })
         self.target_path_prefix = target_path
+        self.group_path_prefix = "groups" # ユーザグループDBのprefix
 
     def add(self, id, content: dict):
         """指定したIDのエリアにデータを追加する
@@ -32,19 +33,22 @@ class Firebase():
     def get_all(self):
         return db.reference(f"{self.target_path_prefix}").get()
     
-if __name__ == "__main__":
-    import logging
-    import os
-    logging.basicConfig(level=logging.INFO)
-
-    from dotenv import load_dotenv
-    load_dotenv()
     
-    fb = Firebase(
-        './keys/hackday-327101-a19313490ec3.json', 
-        "https://hackday-327101-default-rtdb.firebaseio.com",
-        "feedback_comments"
-    )
+    def get_group_users(self, group_id: str):
+        return db.reference(f"{self.group_path_prefix}/{group_id}").get()
+        
+    
+# if __name__ == "__main__":
+    # import logging
+    # logging.basicConfig(level=logging.INFO)
+    # from dotenv import load_dotenv
+    # load_dotenv()
+    
+    # fb = Firebase(
+    #     './keys/hackday-327101-a19313490ec3.json', 
+    #     "https://hackday-327101-default-rtdb.firebaseio.com",
+    #     "feedback_comments"
+    # )
     # fb.add(
     #     id = 'sample',
     #     content = {
@@ -61,7 +65,8 @@ if __name__ == "__main__":
     #     }
     # )
     
-    obj = fb.get_all().get('sample')
-    for i in obj:
-        print(i)
-        print(obj.get(i))
+    # obj = fb.get_all().get('sample')
+    # for i in obj:
+    #     print(i)
+    #     print(obj.get(i))
+    # print(fb.get_group_users("1"))

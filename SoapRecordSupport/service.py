@@ -8,6 +8,8 @@ from SoapRecordSupport.models.PostEvaluate.PostEvaluateRequestModel import \
 from SoapRecordSupport.models.PostEvaluate.PostEvaluateResponseModel import (
     Guideline, Objective, PostEvaluateResponseModel, Recommendation,
     Subjective)
+from SoapRecordSupport.models.PostFeedback.PostFeedbackRequestModel import \
+    PostFeedbackRequestModel
 from SoapRecordSupport.models.PostFeedback.PostFeedbackResponseModel import \
     PostFeedbackResponseModel
 
@@ -46,8 +48,33 @@ def evaluate(request: PostEvaluateRequestModel)-> PostEvaluateResponseModel:
     )
 
 
-def send_line(request):
-    return PostFeedbackResponseModel(status="ok")
+def get_send_users(group_id:str)->list:
+    """group_idに紐づくユーザのLineIdの一覧を取得する
+
+    Args:
+        group_id (str): _description_
+
+    Returns:
+        list: _description_
+    """
+    users = fb.get_group_users(group_id)
+    to_users = []
+    for user_id in users:
+        user = users.get(user_id)
+        to_users.append(user.get('line_user_id'))
+        
+    return to_users
+
+def convert_line_message(request: PostFeedbackRequestModel)->str:
+    return f"""看護記録のFBをお願いします！
+    診療科: {request.department}
+    性別: {request.sex}, 年齢: {request.age}
+    --------------------
+    S (主観評価): {request.subjective}
+    O (客観評価): {request.objective}
+    A (評価): {request.assessment}
+    P (計画): {request.plan}
+    """
 
 
 def save_feedback_message(record_id: str, name: str, content: str):
