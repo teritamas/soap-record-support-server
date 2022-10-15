@@ -104,6 +104,7 @@ def handle_message(event):
         event (_type_): _description_
     """
     try:
+        print(event.source.user_id)
         profile = line_bot_api.get_profile(event.source.user_id)
         service.save_feedback_message(RECORD_ID, profile.display_name, event.message.text)
         line_bot_api.reply_message(event.reply_token, TextSendMessage(text="フィードバックをくれてありがとうございます！担当者さんにお伝えしました！" ))

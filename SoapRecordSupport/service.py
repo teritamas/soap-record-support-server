@@ -1,5 +1,6 @@
 import config
 
+from SoapRecordSupport.facade.CotohaFacade import CotohaFacade
 from SoapRecordSupport.facade.Firebase import Firebase
 from SoapRecordSupport.models.GetFeedback.GetFeedbackResponseModel import (
     FeedBackComment, GetFeedbackResponseModel)
@@ -10,8 +11,6 @@ from SoapRecordSupport.models.PostEvaluate.PostEvaluateResponseModel import (
     Subjective)
 from SoapRecordSupport.models.PostFeedback.PostFeedbackRequestModel import \
     PostFeedbackRequestModel
-from SoapRecordSupport.models.PostFeedback.PostFeedbackResponseModel import \
-    PostFeedbackResponseModel
 
 fb = Firebase(
     config.cred_path, 
@@ -19,7 +18,60 @@ fb = Firebase(
     "feedback_comments"
 )
 
+ch = CotohaFacade(
+    client_id=config.cotoha_client_id,
+    client_secret=config.cotoha_client_secret
+)
 
+def _analysis_subjective_words(target_ward: str)-> list[dict]:
+    """各単語の主観度を評価する
+
+    Args:
+        target_ward (str): _description_
+    """
+    target_words = target_ward.split("。")
+    word_score = []
+    for word in target_words:
+        if word =="" : continue
+        response = ch.predict(word)
+        
+        if response['result']['emotional_sentiment'] == "Neutral":
+            # ニュートラルな文章であると判断された時は主観的な文章として、0.5以上のスコアを与える
+            score = 0.5 - (response["result"]["score"] / 2)
+        else:
+            # ニュートラルな文章以外と判断された時は客観度が高い文章として、0.5以上のスコアを与える
+            score = (response["result"]["score"] / 2) + 0.5
+            
+        word_score.append({
+            "input": word,
+            "score": score
+        })
+    return word_score
+
+def _analysis_objective_words(target_ward: str)-> list[dict]:
+    """各単語の客観度を評価する
+
+    Args:
+        target_ward (str): _description_
+    """
+    target_words = target_ward.split("。")
+    word_score = []
+    for word in target_words:
+        if word =="" : continue
+        response = ch.predict(word)
+        
+        if response['result']['emotional_sentiment'] == "Neutral":
+            # ニュートラルな文章であると判断された時は客観的な文章として、0.5以上のスコアを与える
+            score = (response["result"]["score"] / 2) + 0.5
+        else:
+            # ニュートラルな文章以外と判断された時は客観度が低いな文章として、0.5以下のスコアを与える
+            score = 0.5 - (response["result"]["score"] / 2)
+            
+        word_score.append({
+            "input": word,
+            "score": score
+        })
+    return word_score
 
 def evaluate(request: PostEvaluateRequestModel)-> PostEvaluateResponseModel:
     
@@ -27,13 +79,13 @@ def evaluate(request: PostEvaluateRequestModel)-> PostEvaluateResponseModel:
         plan="電気毛布をかける",
         assessment="これから先体温が下がりそう"
     )
-    sub = Subjective(
-        input="寒くて震えている",
-        score=0.2
+    
+    subjective_score: list[dict] = _analysis_subjective_words(
+        request.subjective
     )
-    ob = Objective(
-        input="体温が30度",
-        score=0.8
+    
+    objective_score: list[dict] = _analysis_objective_words(
+        request.objective
     )
     
     gl = Guideline(
@@ -42,8 +94,12 @@ def evaluate(request: PostEvaluateRequestModel)-> PostEvaluateResponseModel:
     )
     return PostEvaluateResponseModel(
         recommendation=rec,
-        objective=[ob],
-        subjective=[sub],
+        objective=[
+            Objective(input=o.get('input'), score=o.get('score')) for o in objective_score
+            ],
+        subjective=[
+            Subjective(input=o.get('input'), score=o.get('score')) for o in subjective_score
+            ],
         guideline=[gl],
     )
 
