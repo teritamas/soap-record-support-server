@@ -88,10 +88,10 @@ def evaluate(request: PostEvaluateRequestModel)-> PostEvaluateResponseModel:
         request.objective
     )
     
-    gl = Guideline(
-        category="皮膚", 
-        url="https://www.dermatol.or.jp/uploads/uploads/files/guideline/Cutaneous%20angiosarcoma2021.pdf"
-    )
+    # S,Oに含まれるキーワードから関連するガイドラインのURLを取得する。
+    keywords: list[str] = ch.keyword(target_sentence=request.objective + request.subjective)
+    gl = fb.get_guideline(keywords=keywords)
+
     return PostEvaluateResponseModel(
         recommendation=rec,
         objective=[
@@ -100,7 +100,7 @@ def evaluate(request: PostEvaluateRequestModel)-> PostEvaluateResponseModel:
         subjective=[
             Subjective(input=o.get('input'), score=o.get('score')) for o in subjective_score
             ],
-        guideline=[gl],
+        guideline=gl,
     )
 
 

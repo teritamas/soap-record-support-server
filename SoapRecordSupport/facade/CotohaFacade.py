@@ -83,6 +83,34 @@ class CotohaFacade():
         else:
             return emotion_value
 
+    def keyword(self, target_sentence: str, threshold: float = 0)->list[str]:
+        """文章のキーワードを抽出する。
+
+        Args:
+            target_sentence (str): _description_
+        """
+        headers = {
+            "Content-Type": "application/json;charset=UTF-8",
+            "Authorization": "Bearer " + self.access_token,
+        }
+        body = {
+            "document": target_sentence,
+            "type": "default",
+            "max_keyword_num": 3,
+            "dic_type": "medical"
+        }
+
+        endpoint = os.path.join(self.base_url, "nlp/v1/keyword")
+        cotoha_response = requests.post(endpoint, headers=headers, json=body)
+        
+        results = cotoha_response.json()['result']
+        if results == []: return []
+        
+        keywords = []
+        for result in results:
+            keywords.append(result.get('form'))
+
+        return keywords
 
 if __name__ == "__main__":
     from dotenv import load_dotenv
@@ -92,6 +120,5 @@ if __name__ == "__main__":
 
     gaf = CotohaFacade(COTOHA_CLIENT_ID, COTOHA_CLIENT_SECRET)
 
-    target = "寒くて震えている"
-    print(gaf.predict("頭が痛く、寒くて震えている"))
-    print(gaf.predict("体温が30度"))
+    print(gaf.keyword("寒くて震えている。体温は３０度。顔色が悪く頭痛がひどいらしい"))
+    # print(gaf.predict("体温が30度"))
