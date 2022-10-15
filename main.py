@@ -9,5 +9,5 @@ if __name__ == "__main__":
         "SoapRecordSupport:app",
         host=config.http_host,
         port=config.http_port,
-        reload=True
+        reload=config.env != 'prd' # prdでない時=devの時はホットリロードを有効にする。
     )
