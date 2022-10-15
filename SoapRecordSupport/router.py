@@ -26,6 +26,9 @@ router = APIRouter()
 line_bot_api = LineBotApi(config.line_channel_access_token)
 handler = WebhookHandler(config.line_channel_secret)
 
+# 現状は看護記録を打ち分けないのでsampleに固定
+RECORD_ID = "sample"
+
 @router.get(f"{prefix}/")
 def health_check():
     return {"status": "ok"}
@@ -45,30 +48,25 @@ def send_feedback(
 
 @router.get(f"{prefix}/feedback", response_model=GetFeedbackResponseModel)
 def get_feedback():
-    line_bot_api.reply_message(event.reply_token, TextSendMessage(text="フィードバックをくれてありがとうございます！" ))
-    
-    return service.get_feedback()
+    return service.get_feedback(RECORD_ID)
 
 
 @router.post("/callback")
 async def callback(request: Request, x_line_signature=Header(None)):
-    print("check")
-    print(request)
     body = await request.body()
     try:
         handler.handle(body.decode("utf-8"), x_line_signature)
     except InvalidSignatureError as e:
-        print(e)
         raise HTTPException(status_code=400, detail="chatbot handle body error.")
     return 'OK'
 
-# MessageEvent
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
-    #テキストでの返信を行う
-    # line_bot_api.reply_message(
-    #     event.reply_token,
-    #     TextSendMessage(text=event.message.text )
-    # )
-    # res_data = line_bot_api.send(event.message.text)
-    line_bot_api.reply_message(event.reply_token, TextSendMessage(text="フィードバックをくれてありがとうございます！" ))
+    """受け取ったメッセージを、看護記録へのフィードバックとしてDBに保存する。
+
+    Args:
+        event (_type_): _description_
+    """
+    print(event)
+    service.save_feedback_message(RECORD_ID, "test_user", event.message.text)
+    line_bot_api.reply_message(event.reply_token, TextSendMessage(text="フィードバックをくれてありがとうございます！担当者さんにお伝えしました！" ))
