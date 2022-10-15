@@ -1,0 +1,12 @@
+{
+  "type": "service_account",
+  "project_id": "hackday-327101",
+  "private_key_id": "a19313490ec31d50c75c7f24128a7d4c12de2a1a",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQCgJ1C8d165K1TS\nL7x5CQzXWvWeKGoc4ozsBffzAWmyJEeOt/j/lwqvGI/Yn3tnl83aM0MwO1RCSAS0\ngQkiKPvLFSg3SjTppYytHJIPJNgKNI11mtakO23rncYoand0iSTqSWTqhExIMn2t\nuqacpIAuopp+64UeB++DLr5KPJt1boq6YXCgFIZsJgIJQuHZIB7VfCroVnsxToFH\n43/1PomdQTE5v3SRjEx2klopfrPQnbPDQcXFzt1MZYggfVQJR1Y2Ze+5eItvJSJo\npNQZ48wO1AZ2S68Kf+It/2z/3CMCY/9/s5OwQDCkJd4oAulLAMOlXWR3dwGDUtgc\nh2jVByEvAgMBAAECggEAIkHWpMG56szog18/pvo3G3ey80Y80HnrX+805u+F7tuQ\nzOfwZKen2uVbm6Adkv6nQ0XU2OPP9a+XBg9V508x8PJRHGaMo+/MBBmI6qFcbu5n\n1eCtigrGS/B/OxTvAWf2lADoC7wJ3yWhuYAj9HzBiHgyqPRzEIXtBzf/7zxAmqEY\na4BixSp1fYeK4y3JVTZ9sv6sClSxhLVkPCwv+t1hke+RCnsdHFPiE4tnAkjvk3pX\nR+i+tnu+SYEusvegeDxYlvmqfGXogRhyn0wssYHNC6O4gBsr7aLZHF6PdBIGVYW6\nBgh4Jw8PF6CO9tfZ13WRU4wnfceCk30t0ox8dhz0aQKBgQDTGy0bvTXdtnJvmryO\n/j1t7IpgVcsNzNWvzkE5F0USYm8NBPIqNEC6joQdowVvPQLv4smha8drsGq5Tkeg\ngkLhUbC7mTau69iP/kdfa0fvNr/abrdVjluVNCXtqs0kSSsVhP8v0E/m+GKFsFqP\ns0ANSpDVHTdWHmOk8xDIirt/hwKBgQDCNjszvZD4rW2ot0jo5Gcr2zbRxs4VuGwN\n8CTTevZ0KkhSWjeSO+UWc0qbtdq5Lako4IhiKbgHQikiQW0NpEacxVRq/eQSWRRG\n0TMifhQrRP7B+odIYu+OhZ7hhbw3jX5tBQp0HjBBXh8Gs/Xy/lkXRE0X6fL24OhY\nmBPI/lQrGQKBgQDIpaHgJZyXGJv3+6iQeJFGc3aqTaDrgu7vZCiV7MoXyTsnsrXA\n611Cc8aarKGzstehzXo7VMd8UXd+nSpzIpwSsKQ8CknxQ/TYF6Uaykra0LzVDjpu\ntRnS3HfYR2knveuXTouFlIb9TsPFsXLB9mtAtsil5lj8H3IyC1y+Xy4K7QKBgFPX\nHY+kkmUIWYKwPSVtFKz2IaBF9smhp+QMe5lgR+y2JCqJD9xtRuR+OQMnapjugUxI\nQhg+cleP1DoZjH6LIIClH2Bg4oiZNAuuXCjTzNkxG9mZ0bUKIOih/ojVNv+0cZOW\nzYB7V9GgVDyMi+yuqL9GmRFtyZmSVjuIy2HFiYhhAoGAKyPQU3XG2gUPG4m7Gl/c\nVHSQrWRLfOKVIJerNvv0ljX/zrHZ1NuIbNI/v+wKKqMRdk409FN1h0i2dIvrnZTf\nF32wSm/gqCJqNfj+Knd3L2NCyNvguHx66UX+ouqnbywFr1Kqjw5UZ1aQPOk8gBxl\nqarE77+M53uylR8THT1rlJ4=\n-----END PRIVATE KEY-----\n",
+  "client_email": "medical-hackday-2022@hackday-327101.iam.gserviceaccount.com",
+  "client_id": "104665152831779935721",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/medical-hackday-2022%40hackday-327101.iam.gserviceaccount.com"
+}

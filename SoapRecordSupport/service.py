@@ -1,6 +1,6 @@
+import config
 
-from os import stat
-
+from SoapRecordSupport.facade.Firebase import Firebase
 from SoapRecordSupport.models.GetFeedback.GetFeedbackResponseModel import (
     FeedBackComment, GetFeedbackResponseModel)
 from SoapRecordSupport.models.PostEvaluate.PostEvaluateRequestModel import \
@@ -10,6 +10,13 @@ from SoapRecordSupport.models.PostEvaluate.PostEvaluateResponseModel import (
     Subjective)
 from SoapRecordSupport.models.PostFeedback.PostFeedbackResponseModel import \
     PostFeedbackResponseModel
+
+fb = Firebase(
+    config.cred_path, 
+    config.firebase_database_url,
+    "feedback_comments"
+)
+
 
 
 def evaluate(request: PostEvaluateRequestModel)-> PostEvaluateResponseModel:
@@ -42,16 +49,40 @@ def evaluate(request: PostEvaluateRequestModel)-> PostEvaluateResponseModel:
 def send_line(request):
     return PostFeedbackResponseModel(status="ok")
 
-def get_feedback():
-    fb1 = FeedBackComment(
-        name="田中", 
-        feedback_comment="最高の看護記録です！"
-    )
-    fb2 = FeedBackComment(
-        name="山田", 
-        feedback_comment="血圧も測った方がいいですよ！"
-    )
+
+def save_feedback_message(record_id: str, name: str, content: str):
+    """フィードバックを受けたメッセージを保存する。
+
+    Args:
+        record_id (str): _description_
+        name (str): _description_
+        content (str): _description_
+    """
+    fb.add(record_id, {
+        "name": name,
+        "content": content
+    })
+
+def get_feedback(record_id: str):
+    """看護記録に紐づくフィードバックコメントを受け取る
+
+    Args:
+        record_id (str): 検索対象のフィードバックコメント
+
+    Returns:
+        _type_: _description_
+    """
+    comments = fb.get_all().get(record_id)
+    feedback_comments: list = []
+    for comment_id in comments:
+        comment = comments.get(comment_id)
+        feedback_comments.append(
+            FeedBackComment(
+                name=comment.get('name'), 
+                feedback_comment=comment.get('comment')
+            )
+        )
     
     return GetFeedbackResponseModel(
-        feedback_comments=[fb1, fb2]
+        feedback_comments=feedback_comments
     )
