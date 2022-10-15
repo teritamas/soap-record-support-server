@@ -159,7 +159,6 @@ def get_feedback(record_id: str):
     feedback_comments: list = []
     for comment_id in comments:
         comment = comments.get(comment_id)
-        print(comment.get('name'), comment.get('comment'))
         feedback_comments.append(
             FeedBackComment(
                 name=comment.get('name'), 

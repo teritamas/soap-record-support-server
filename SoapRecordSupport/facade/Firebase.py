@@ -42,7 +42,6 @@ class Firebase():
         guidelines = db.reference(f"guidelines").get()
         
         target_guidelines: list[Guideline] = []
-        print(guidelines)
 
         for guide in guidelines:
             try:
