@@ -76,8 +76,8 @@ def _analysis_objective_words(target_ward: str)-> list[dict]:
 def evaluate(request: PostEvaluateRequestModel)-> PostEvaluateResponseModel:
     
     rec = Recommendation(
-        plan="電気毛布をかける",
-        assessment="これから先体温が下がりそう"
+        plan="息苦しさや空咳、聴診の結果から、排痰が不十分であることが考えられる。自己排痰が困難なため、排痰を促す必要がある。",
+        assessment="排痰を促すべく、吸引・体位ドレナージを行い、定期的にSpO2の観察を行う。また、場合によって呼吸リハビリテーションを実施する。"
     )
     
     subjective_score: list[dict] = _analysis_subjective_words(
