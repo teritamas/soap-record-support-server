@@ -45,6 +45,8 @@ def send_feedback(
 
 @router.get(f"{prefix}/feedback", response_model=GetFeedbackResponseModel)
 def get_feedback():
+    line_bot_api.reply_message(event.reply_token, TextSendMessage(text="フィードバックをくれてありがとうございます！" ))
+    
     return service.get_feedback()
 
 
@@ -59,8 +61,6 @@ async def callback(request: Request, x_line_signature=Header(None)):
         print(e)
         raise HTTPException(status_code=400, detail="chatbot handle body error.")
     return 'OK'
-
-
 
 # MessageEvent
 @handler.add(MessageEvent, message=TextMessage)
