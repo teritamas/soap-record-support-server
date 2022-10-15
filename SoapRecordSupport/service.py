@@ -19,7 +19,8 @@ fb = Firebase(
     "feedback_comments"
 )
 
-
+# def _analysis_fact_words():
+    
 
 def evaluate(request: PostEvaluateRequestModel)-> PostEvaluateResponseModel:
     
