@@ -90,6 +90,8 @@ def evaluate(request: PostEvaluateRequestModel)-> PostEvaluateResponseModel:
     
     # S,Oに含まれるキーワードから関連するガイドラインのURLを取得する。
     keywords: list[str] = ch.keyword(target_sentence=request.objective + request.subjective)
+    keywords.append("頭痛") # デバッグ用に頭痛を必須で入れる
+
     gl = fb.get_guideline(keywords=keywords)
 
     return PostEvaluateResponseModel(
