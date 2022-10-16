@@ -7,7 +7,15 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from SoapRecordSupport.router import router
 
-app = FastAPI()
+description = f"""
+看護師の看護記録の記入の支援を行うレコサポAPIのAPI仕様書です。
+"""
+
+app = FastAPI(
+    title="レコサポAPI",
+    description=description,
+    version="0.0.1",
+)
 
 origins = ['*']
 
