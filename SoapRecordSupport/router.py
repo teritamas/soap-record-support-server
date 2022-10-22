@@ -1,9 +1,7 @@
-import logging
-from urllib import request
+from typing import Optional
 
 import config
 from fastapi import APIRouter, Header, HTTPException, Request
-from linebot import LineBotApi, WebhookHandler
 from linebot.exceptions import InvalidSignatureError
 from linebot.models import MessageEvent, TextMessage, TextSendMessage
 
@@ -13,6 +11,12 @@ from SoapRecordSupport.models.GetFeedback.GetFeedbackResponseModel import \
     GetFeedbackResponseModel
 from SoapRecordSupport.models.GetRecord.GetRecordResponseModel import \
     GetRecordResponseModel
+from SoapRecordSupport.models.LineLogin.LineLoginAuthenticateResponse import \
+    LineLoginAuthenticateResponse
+from SoapRecordSupport.models.LineLogin.LineLoginUrlResponse import \
+    LineLoginLoginUrlResponse
+from SoapRecordSupport.models.LineLogin.UserInfoResponse import \
+    UserInfoResponse
 from SoapRecordSupport.models.PostEvaluate.PostEvaluateRequestModel import \
     PostEvaluateRequestModel
 from SoapRecordSupport.models.PostEvaluate.PostEvaluateResponseModel import \
@@ -26,14 +30,16 @@ from SoapRecordSupport.models.PostRecord.PostRecordRequestModel import \
 from SoapRecordSupport.models.PostRecord.PostRecordResponseModel import \
     PostRecordResponseModel
 from SoapRecordSupport.services import (NursingRecordService,
-                                        RecordFeedbackService)
+                                        RecordFeedbackService, handler,
+                                        line_bot_api)
+from SoapRecordSupport.services.Login import (create_line_login_url,
+                                              line_get_token)
+from SoapRecordSupport.services.Users import set_or_get_user
 
 prefix = "/api/v1/soap-record-support"
 
 router = APIRouter()
 
-line_bot_api = LineBotApi(config.line_channel_access_token)
-handler = WebhookHandler(config.line_channel_secret)
 
 # 現状は看護記録を打ち分けないのでsampleに固定
 RECORD_ID = "sample"
@@ -141,3 +147,26 @@ def handle_message(event):
         line_bot_api.reply_message(event.reply_token, TextSendMessage(text="フィードバックをくれてありがとうございます！担当者さんにお伝えしました！" ))
     except Exception as ex: 
         print(ex)
+
+
+@router.get(f"{prefix}/auth/line_login", response_model=LineLoginLoginUrlResponse)
+async def get_login_url(redirect_url: Optional[str] = None) -> LineLoginLoginUrlResponse:
+    """Lineログイン用のURLを発行する
+    """
+    return create_line_login_url(redirect_url)
+
+@router.get(f"{prefix}/auth/line_auth", response_model=UserInfoResponse)
+async def authenticate(
+    code: str, 
+    redirect_url: Optional[str] = None
+    ) -> UserInfoResponse:
+    """LINEより取得した情報を、レコサポ用のユーザ情報に変換して返す。
+    """
+    line_info:LineLoginAuthenticateResponse = line_get_token(code, redirect_url=redirect_url)
+    
+    return set_or_get_user(
+        group_id=GROUP_ID,
+        user_id=line_info.userId,
+        name=line_info.name,
+        code=code
+        )

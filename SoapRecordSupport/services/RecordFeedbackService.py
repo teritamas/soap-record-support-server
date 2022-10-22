@@ -3,11 +3,10 @@ from SoapRecordSupport.models.GetFeedback.GetFeedbackResponseModel import (
 from SoapRecordSupport.models.PostEvaluate.PostEvaluateRequestModel import \
     PostEvaluateRequestModel
 from SoapRecordSupport.models.PostEvaluate.PostEvaluateResponseModel import (
-    Guideline, Objective, PostEvaluateResponseModel, Recommendation,
-    Subjective)
+    Objective, PostEvaluateResponseModel, Recommendation, Subjective)
 from SoapRecordSupport.models.PostFeedback.PostFeedbackRequestModel import \
     PostFeedbackRequestModel
-from SoapRecordSupport.services import ch, fb
+from SoapRecordSupport.services import cotoha_facade, fire_base
 
 
 def _analysis_subjective_words(target_ward: str)-> list[dict]:
@@ -20,7 +19,7 @@ def _analysis_subjective_words(target_ward: str)-> list[dict]:
     word_score = []
     for word in target_words:
         if word =="" : continue
-        response = ch.predict(word)
+        response = cotoha_facade.predict(word)
         
         if response['result']['emotional_sentiment'] == "Neutral":
             # ニュートラルな文章であると判断された時は主観的な文章として、0.5以上のスコアを与える
@@ -45,7 +44,7 @@ def _analysis_objective_words(target_ward: str)-> list[dict]:
     word_score = []
     for word in target_words:
         if word =="" : continue
-        response = ch.predict(word)
+        response = cotoha_facade.predict(word)
         
         if response['result']['emotional_sentiment'] == "Neutral":
             # ニュートラルな文章であると判断された時は客観的な文章として、0.5以上のスコアを与える
@@ -76,9 +75,9 @@ def evaluate(request: PostEvaluateRequestModel)-> PostEvaluateResponseModel:
     )
     
     # S,Oに含まれるキーワードから関連するガイドラインのURLを取得する。
-    keywords: list[str] = ch.keyword(target_sentence=request.objective + request.subjective)
+    keywords: list[str] = cotoha_facade.keyword(target_sentence=request.objective + request.subjective)
 
-    gl = fb.get_guideline(keywords=keywords)
+    gl = fire_base.get_guideline(keywords=keywords)
 
     return PostEvaluateResponseModel(
         recommendation=rec,
@@ -101,11 +100,11 @@ def get_send_users(group_id:str)->list:
     Returns:
         list: _description_
     """
-    users = fb.get_group_users(group_id)
+    users = fire_base.get_group_users(group_id)
     to_users = []
     for user_id in users:
         user = users.get(user_id)
-        to_users.append(user.get('line_user_id'))
+        to_users.append(user_id)
         
     return to_users
 
@@ -129,7 +128,7 @@ def save_feedback_message(record_id: str, name: str, content: str):
         name (str): _description_
         content (str): _description_
     """
-    fb.add(record_id, {
+    fire_base.add(record_id, {
         "name": name,
         "comment": content
     })
@@ -143,7 +142,7 @@ def get_feedback(record_id: str):
     Returns:
         _type_: _description_
     """
-    comments = fb.get_all().get(record_id)
+    comments = fire_base.get_all().get(record_id)
     feedback_comments: list = []
     for comment_id in comments:
         comment = comments.get(comment_id)
