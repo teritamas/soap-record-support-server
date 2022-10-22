@@ -1,7 +1,3 @@
-import config
-
-from SoapRecordSupport.facade.CotohaFacade import CotohaFacade
-from SoapRecordSupport.facade.Firebase import Firebase
 from SoapRecordSupport.models.GetFeedback.GetFeedbackResponseModel import (
     FeedBackComment, GetFeedbackResponseModel)
 from SoapRecordSupport.models.PostEvaluate.PostEvaluateRequestModel import \
@@ -11,17 +7,8 @@ from SoapRecordSupport.models.PostEvaluate.PostEvaluateResponseModel import (
     Subjective)
 from SoapRecordSupport.models.PostFeedback.PostFeedbackRequestModel import \
     PostFeedbackRequestModel
+from SoapRecordSupport.services import ch, fb
 
-fb = Firebase(
-    config.cred_path, 
-    config.firebase_database_url,
-    "feedback_comments"
-)
-
-ch = CotohaFacade(
-    client_id=config.cotoha_client_id,
-    client_secret=config.cotoha_client_secret
-)
 
 def _analysis_subjective_words(target_ward: str)-> list[dict]:
     """各単語の主観度を評価する

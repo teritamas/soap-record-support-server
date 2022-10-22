@@ -7,9 +7,12 @@ from linebot import LineBotApi, WebhookHandler
 from linebot.exceptions import InvalidSignatureError
 from linebot.models import MessageEvent, TextMessage, TextSendMessage
 
-import SoapRecordSupport.service as service
+from SoapRecordSupport.models.CreateRecord.CreateRecordResponseModel import \
+    CreateRecordResponseModel
 from SoapRecordSupport.models.GetFeedback.GetFeedbackResponseModel import \
     GetFeedbackResponseModel
+from SoapRecordSupport.models.GetRecord.GetRecordResponseModel import \
+    GetRecordResponseModel
 from SoapRecordSupport.models.PostEvaluate.PostEvaluateRequestModel import \
     PostEvaluateRequestModel
 from SoapRecordSupport.models.PostEvaluate.PostEvaluateResponseModel import \
@@ -18,6 +21,12 @@ from SoapRecordSupport.models.PostFeedback.PostFeedbackRequestModel import \
     PostFeedbackRequestModel
 from SoapRecordSupport.models.PostFeedback.PostFeedbackResponseModel import \
     PostFeedbackResponseModel
+from SoapRecordSupport.models.PostRecord.PostRecordRequestModel import \
+    PostRecordRequestModel
+from SoapRecordSupport.models.PostRecord.PostRecordResponseModel import \
+    PostRecordResponseModel
+from SoapRecordSupport.services import (NursingRecordService,
+                                        RecordFeedbackService)
 
 prefix = "/api/v1/soap-record-support"
 
@@ -34,12 +43,34 @@ GROUP_ID = "1"
 def health_check():
     return {"status": "ok"}
 
+@router.post(f"{prefix}/record", response_model=CreateRecordResponseModel)
+def create_record() -> CreateRecordResponseModel:
+    """新しい看護記録の作成を開始する。
+    """
+    return NursingRecordService.create_record()
+
+@router.get( prefix + "/record/{record_id}", response_model=GetRecordResponseModel)
+def get_record(
+    record_id: str
+):
+    """record_idに紐づく看護記録を取得する
+    """
+    return NursingRecordService.get_record(record_id)
+
+@router.post( prefix + "/record/{record_id}", response_model=PostRecordResponseModel)
+def post_record(
+    record_id: str,
+    request: PostRecordRequestModel
+):
+    """看護記録を保存する
+    """
+    return NursingRecordService.post_record(record_id, request)
 
 @router.post(f"{prefix}/evaluate", response_model=PostEvaluateResponseModel)
 def evaluate_soap(
     request: PostEvaluateRequestModel
 ):
-    return service.evaluate(request)
+    return RecordFeedbackService.evaluate(request)
 
 @router.post(f"{prefix}/feedback", response_model=PostFeedbackResponseModel)
 def send_feedback(
@@ -54,8 +85,8 @@ def send_feedback(
         _type_: _description_
     """
     
-    to_users: list[str] = service.get_send_users(GROUP_ID)
-    converted_text: str = service.convert_line_message(request)
+    to_users: list[str] = RecordFeedbackService.get_send_users(GROUP_ID)
+    converted_text: str = RecordFeedbackService.convert_line_message(request)
     
     line_bot_api.multicast(
         to=to_users,
@@ -72,7 +103,7 @@ def get_feedback():
     Returns:
         _type_: _description_
     """
-    return service.get_feedback(RECORD_ID)
+    return RecordFeedbackService.get_feedback(RECORD_ID)
 
 
 @router.post("/callback")
@@ -106,7 +137,7 @@ def handle_message(event):
     try:
         print(f"ユーザ情報: {event.source}")
         profile = line_bot_api.get_profile(event.source.user_id)
-        service.save_feedback_message(RECORD_ID, profile.display_name, event.message.text)
+        RecordFeedbackService.save_feedback_message(RECORD_ID, profile.display_name, event.message.text)
         line_bot_api.reply_message(event.reply_token, TextSendMessage(text="フィードバックをくれてありがとうございます！担当者さんにお伝えしました！" ))
     except Exception as ex: 
         print(ex)
