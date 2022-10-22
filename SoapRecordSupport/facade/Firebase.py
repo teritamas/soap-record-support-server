@@ -38,9 +38,28 @@ class Firebase():
         return db.reference(f"{self.target_path_prefix}").get()
     
     def get_group_users(self, group_id: str):
+        """グループに属するユーザの一覧を取得する
+
+        Args:
+            group_id (str): _description_
+
+        Returns:
+            _type_: _description_
+        """
         return db.reference(f"{self.group_path_prefix}/{group_id}").get()
     
     def set_group_user(self, group_id: str, user_id:str, name: str, code: str):
+        """ユーザ情報を更新、追加する。存在する場合はcodeだけ更新される。
+        
+        Args:
+            group_id (str): _description_
+            user_id (str): _description_
+            name (str): _description_
+            code (str): _description_
+
+        Returns:
+            _type_: _description_
+        """
         content: dict = {
             "name": name,
             "code": code
