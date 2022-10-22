@@ -151,6 +151,8 @@ def handle_message(event):
 
 @router.get(f"{prefix}/auth/line_login", response_model=LineLoginLoginUrlResponse)
 async def get_login_url(redirect_url: Optional[str] = None) -> LineLoginLoginUrlResponse:
+    """Lineログイン用のURLを発行する
+    """
     return create_line_login_url(redirect_url)
 
 @router.get(f"{prefix}/auth/line_auth", response_model=UserInfoResponse)
@@ -158,6 +160,8 @@ async def authenticate(
     code: str, 
     redirect_url: Optional[str] = None
     ) -> UserInfoResponse:
+    """LINEより取得した情報を、レコサポ用のユーザ情報に変換して返す。
+    """
     line_info:LineLoginAuthenticateResponse = line_get_token(code, redirect_url=redirect_url)
     
     return set_or_get_user(
