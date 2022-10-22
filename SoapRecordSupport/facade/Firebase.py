@@ -40,6 +40,17 @@ class Firebase():
     def get_group_users(self, group_id: str):
         return db.reference(f"{self.group_path_prefix}/{group_id}").get()
     
+    def set_group_user(self, group_id: str, user_id:str, name: str, code: str):
+        content: dict = {
+            "name": name,
+            "code": code
+        }
+        db.reference(f"{self.group_path_prefix}/{group_id}/{user_id}").set(content)
+        return content
+    
+    def find_group_user(self, group_id: str, user_id: str):
+        return db.reference(f"{self.group_path_prefix}/{group_id}/{user_id}").get()
+    
     def get_guideline(self, keywords: list[str])->list[Guideline]:
         guidelines = db.reference(self.guidelines_path_prefix).get()
         
@@ -47,7 +58,6 @@ class Firebase():
 
         for guide in guidelines:
             try:
-                print(keywords)
                 if guide.get('category') in keywords:
                     target_guidelines.append(
                         Guideline(

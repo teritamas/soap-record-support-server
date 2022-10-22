@@ -3,8 +3,7 @@ from SoapRecordSupport.models.GetFeedback.GetFeedbackResponseModel import (
 from SoapRecordSupport.models.PostEvaluate.PostEvaluateRequestModel import \
     PostEvaluateRequestModel
 from SoapRecordSupport.models.PostEvaluate.PostEvaluateResponseModel import (
-    Guideline, Objective, PostEvaluateResponseModel, Recommendation,
-    Subjective)
+    Objective, PostEvaluateResponseModel, Recommendation, Subjective)
 from SoapRecordSupport.models.PostFeedback.PostFeedbackRequestModel import \
     PostFeedbackRequestModel
 from SoapRecordSupport.services import ch, fb
@@ -105,7 +104,7 @@ def get_send_users(group_id:str)->list:
     to_users = []
     for user_id in users:
         user = users.get(user_id)
-        to_users.append(user.get('line_user_id'))
+        to_users.append(user_id)
         
     return to_users
 
